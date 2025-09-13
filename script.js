@@ -103,78 +103,162 @@ const {await}=require ("path");
 // server.listen(3000);
  
         //Express.js 
+
+
 const express = require("express");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
+// const bodyParser = require("body-parser");
+// const cookieParser = require("cookie-parser");
 const path = require("path");
-const session = require("express-session");
+const { name } = require('ejs');
+// const session = require("express-session");
 
 const app = express();
 let PORT = 4000; // default port
 
-// Middlewares
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+               // Middlewares
 
-// Session middleware
+// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(cookieParser());
 
-app.use(session({
-  secret: "mySecretKey",        // secret key for session encryption
-  resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 60000 }     // session expiry = 1 minute
-}));
+              // Session middleware
 
-// Routes
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+// app.use(session({
+//   secret: "mySecretKey",        // secret key for session encryption
+//   resave: false,
+//   saveUninitialized: true,
+//   cookie: { maxAge: 60000 }     // session expiry = 1 minute
+// }));
 
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
+               // Routes
 
-  if (username === "Admin" && password === "123") {
-    // Save in cookie
-    res.cookie("username", username, { maxAge: 700000, httpOnly: true });
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "index.html"));
+// });
 
-    // Save in session
-    req.session.user = username;
+// app.post("/login", (req, res) => {
+//   const { username, password } = req.body;
 
-    res.send(`Login successful 
-              <br><a href='/profile'>Go to Profile</a>`);
-  } else {
-    res.send("Invalid credentials  <br><a href='/'>Try Again</a>");
-  }
-});
+//   if (username === "Admin" && password === "123") {
 
-app.get("/profile", (req, res) => {
-  // Check session first
-  if (req.session.user) {
-    res.send(`Hello ${req.session.user}, (from SESSION) Welcome Back! 
-              <br><a href='/logout'>Logout</a>`);
-  } 
-  // Fallback: check cookie if session expired
-  else if (req.cookies.username) {
-    res.send(`Hello ${req.cookies.username}, (from COOKIE) Welcome Back! 
-              <br><a href='/logout'>Logout</a>`);
-  } 
-  else {
-    res.send("No session/cookie found ❌ <br><a href='/'>Login</a>");
-  }
-});
+              // Save in cookie
 
-app.get("/logout", (req, res) => {
-  res.clearCookie("username");
-  // Destroy session
-  req.session.destroy(() => {
-    res.send("Logged out ✅ (Session + Cookie cleared) <br><a href='/'>Login again</a>");
-  });
-});
+//     res.cookie("username", username, { maxAge: 700000, httpOnly: true });
+
+             // Save in session
+
+//     req.session.user = username;
+
+//     res.send(`Login successful 
+//               <br><a href='/profile'>Go to Profile</a>`);
+//   } else {
+//     res.send("Invalid credentials  <br><a href='/'>Try Again</a>");
+//   }
+// });
+
+// app.get("/profile", (req, res) => {
+
+             // Check session first
+
+//   if (req.session.user) {
+//     res.send(`Hello ${req.session.user}, (from SESSION) Welcome Back! 
+//               <br><a href='/logout'>Logout</a>`);
+//   } 
+            // Fallback: check cookie if session expired
+
+//   else if (req.cookies.username) {
+//     res.send(`Hello ${req.cookies.username}, (from COOKIE) Welcome Back! 
+//               <br><a href='/logout'>Logout</a>`);
+//   } 
+//   else {
+//     res.send("No session/cookie found  <br><a href='/'>Login</a>");
+//   }
+// });
+
+// app.get("/logout", (req, res) => {
+//   res.clearCookie("username");
+
+                 // Destroy session
+
+//   req.session.destroy(() => {
+//     res.send("Logged out  (Session + Cookie cleared) <br><a href='/'>Login again</a>");
+//   });
+// });
 
 // 404 handler
-app.use((req, res) => {
-  res.status(404).send("Page not found");
-});
+
+// app.use((req, res) => {
+//   res.status(404).send("Page not found");
+// });
+
+
+    // EJS, Dynamic Routing & Project Setup 
+
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use(express.static(path.join(__dirname,"public")));
+app.set('view engine , ejs ');
+app.set("views", path.join(__dirname, "views")); 
+
+app.get("/",(req,res)=>{
+    res.render("index.ejs",{name:"Muaz"});
+})
+  const users=[
+  { id: 1, username: "muaz", name: "Muaz Jutt", followers: 1800, bio: "Backend Developer" },
+  { id: 2, username: "ali", name: "Adil Butt", followers: 200, bio: "Frontend Developer" },
+  { id: 3, username: "saif", name: "Saif Rajpoot", followers: 90, bio: "UI/UX Designer" }
+];
+  app.get("/users",(req,res)=>{
+    res.render("user.ejs",{users});
+  });
+  app.get("/profile/:username",(req,res)=>{
+    const user=users.find(u=>u.username === req.params.username);
+    if(user){
+        res.render("profile.ejs",{user});
+    }
+    else{
+        res.render("error.ejs",{username:req.params.username});
+    }
+  })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Function to start server
 function startServer(port) {
@@ -193,4 +277,8 @@ function startServer(port) {
 }
 
 // Start server with auto-port finder
+
 startServer(PORT);
+
+
+
