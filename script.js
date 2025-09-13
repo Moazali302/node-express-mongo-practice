@@ -103,42 +103,94 @@ const {await}=require ("path");
 // server.listen(3000);
  
         //Express.js 
-
 const express = require("express");
-const { error } = require('console');
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const path = require("path");
+const session = require("express-session");
+
 const app = express();
+let PORT = 4000; // default port
 
+// Middlewares
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-    // Middleware use 
+// Session middleware
 
-app.use(function(req,res,next){
-    console.log("Middleware is working");
-    next();
-})
-// create routes
+app.use(session({
+  secret: "mySecretKey",        // secret key for session encryption
+  resave: false,
+  saveUninitialized: true,
+  cookie: { maxAge: 60000 }     // session expiry = 1 minute
+}));
 
-app.get("/", function (req, res) {
-    res.send("Welcome to Home Screen");
+// Routes
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
-app.get("/profile",function(req,res){
-    res.send("My Name is moaz ");
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  if (username === "Admin" && password === "123") {
+    // Save in cookie
+    res.cookie("username", username, { maxAge: 700000, httpOnly: true });
+
+    // Save in session
+    req.session.user = username;
+
+    res.send(`Login successful 
+              <br><a href='/profile'>Go to Profile</a>`);
+  } else {
+    res.send("Invalid credentials  <br><a href='/'>Try Again</a>");
+  }
 });
-  app.get("/about" ,function(req,res){
-     res.json({name:"Moaz" , age:32});
-  });
 
-       //Error handling  
-
-  app.get("/dashboard",function(req,res,next){
-    return next(new Error("Dashboard is not found"));
-  });
-  app.use((error,req,res,next)=>{
-   console.error(error.stack)
-   res.status(404).send("Page not Found");
-  });
-
-
-app.listen(4000, () => {
-    console.log("Server running on http://localhost:4000");
+app.get("/profile", (req, res) => {
+  // Check session first
+  if (req.session.user) {
+    res.send(`Hello ${req.session.user}, (from SESSION) Welcome Back! 
+              <br><a href='/logout'>Logout</a>`);
+  } 
+  // Fallback: check cookie if session expired
+  else if (req.cookies.username) {
+    res.send(`Hello ${req.cookies.username}, (from COOKIE) Welcome Back! 
+              <br><a href='/logout'>Logout</a>`);
+  } 
+  else {
+    res.send("No session/cookie found ❌ <br><a href='/'>Login</a>");
+  }
 });
+
+app.get("/logout", (req, res) => {
+  res.clearCookie("username");
+  // Destroy session
+  req.session.destroy(() => {
+    res.send("Logged out ✅ (Session + Cookie cleared) <br><a href='/'>Login again</a>");
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).send("Page not found");
+});
+
+// Function to start server
+function startServer(port) {
+  const server = app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+
+  server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.log(`Port ${port} busy, trying ${port + 1}...`);
+      startServer(port + 1);
+    } else {
+      console.error(err);
+    }
+  });
+}
+
+// Start server with auto-port finder
+startServer(PORT);
