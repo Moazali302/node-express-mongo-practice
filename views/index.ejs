@@ -5,11 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link  rel="stylesheet"  href="/stylesheets/style.css"> -->
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <title>Document</title>
+    <title>Backend Series</title>
 </head>
-<body class="bg-cyan-600 text-white text-3xl ">
-    <h1 class="px-5 py-2 mt-4 ">Welcome <%= name %></h1>
+<body class="main w-full min-h-screen bg-zinc-900  text-white text-xl ">
+    <h1 class="px-5 py-2 mt-4 ">Welcome</h1>
        <a class="text-red-700 px-5 underline md:underline-offset-4" href="/users"> Go Users </a>
+
+  <div class="h-fullscreen bg-zinc-900 text-white ">
+    <div class="form p-10">
+        <form action="/create" method="post">
+            <input class="w-full text-white block px-5 py-3 outline-none border-1 mt-4 rounded-lg m-3" type="text" name="title" placeholder="Enter your issue ">
+            <textarea name="details" placeholder="Describe your problem" class="w-full resize-none block px-5 py-2 border-1 block mt-6 rounded-lg m-3"></textarea>
+            <button class="bg-blue-500 text-white p-5 px-4 py-2 m-6 rounded-lg " type="submit">submit </button>
+        </form>
+    </div>
+    <div class="task-list flex gap-4 flex-wrap p-10  ">
+
+        <% if(files.length > 0){ %>
+        <% files.forEach(function(val){ %>
+              <div class="task-card min-w-72 px-3 py-4 bg-zinc-800 rounded-lg   text-white ">
+            <h1 class="text-white text-2xl tracking-tighter "> <%= val %></h1>
+            <a class="text-blue-500 inline-block mt-3" href="/files/<%= val %> ">Readmore</a>
+    </div>
+        <% }) %>
+        <% } else{ %>
+   <h3 class="text-blue-600 ">No Task yet </h3>
+        <% } %>
+
+
+
+      <!-- <div class="task-card hidden w-72 px-3 py-4 bg-zinc-800 rounded-lg   text-white ">
+            <h1 class="text-white text-2xl tracking-tighter ">Some task goes here </h1>
+            <a class="text-blue-500 inline-block mt-3" href=" ">Readmore</a>
+    </div>
+
+      <div class="task-card hidden w-72 px-3 py-4 bg-zinc-800 rounded-lg   text-white ">
+            <h1 class="text-white text-2xl tracking-tighter ">Some task goes here </h1>
+            <a class="text-blue-500 inline-block mt-3" href=" ">Readmore</a>  
+    </div>
+   -->
+
+
+  </div>
+
   
 </body>
 </html>
