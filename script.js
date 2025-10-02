@@ -41,9 +41,7 @@ app.post("/login", (req, res) => {
     // Save in session
     req.session.user = username;
 
-    res.send(
-      `Login successful <br><a href='/profile'>Go to Profile</a>`
-    );
+    res.send(`Login successful <br><a href='/profile'>Go to Profile</a>`);
   } else {
     res.send("Invalid credentials  <br><a href='/'>Try Again</a>");
   }
@@ -82,12 +80,16 @@ app.get("/files", (req, res) => {
 });
 
 app.get("/file/:filename", function (req, res) {
-  fs.readFile(`./files/${req.params.filename}`, "utf-8", function (err, filedata) {
-    if (err) {
-      return res.status(500).send("Error reading file");
+  fs.readFile(
+    `./files/${req.params.filename}`,
+    "utf-8",
+    function (err, filedata) {
+      if (err) {
+        return res.status(500).send("Error reading file");
+      }
+      res.render("show", { filename: req.params.filename, filedata: filedata });
     }
-    res.render("show", { filename: req.params.filename, filedata: filedata });
-  });
+  );
 });
 
 app.get("/edit/:filename", function (req, res) {
@@ -95,21 +97,30 @@ app.get("/edit/:filename", function (req, res) {
 });
 
 app.post("/edit", function (req, res) {
-  fs.rename(`./files/${req.body.previous}`, `./files/${req.body.new}`, function (err) {
-    if (err) return res.status(500).send("Error renaming file");
-    res.redirect("/files");
-  });
+  fs.rename(
+    `./files/${req.body.previous}`,
+    `./files/${req.body.new}`,
+    function (err) {
+      if (err) return res.status(500).send("Error renaming file");
+      res.redirect("/files");
+    }
+  );
 });
 
 app.post("/create", function (req, res) {
-  fs.writeFile(`./files/${req.body.title}.txt`, req.body.details, function (err) {
-    if (err) return res.status(500).send("Error creating file");
-    res.redirect("/files");
-  });
+  fs.writeFile(
+    `./files/${req.body.title}.txt`,
+    req.body.details,
+    function (err) {
+      if (err) return res.status(500).send("Error creating file");
+      res.redirect("/files");
+    }
+  );
 });
 
 // -------------------- MongoDB + Mongoose --------------------
 const userModel = require("./user_model");
+const { name } = require("ejs");
 
 app.get("/createUser", async (req, res) => {
   try {
@@ -124,6 +135,23 @@ app.get("/createUser", async (req, res) => {
     res.status(500).send("Error creating user: " + err.message);
   }
 });
+  app.get("/update",async(req,res)=>{
+      let updateuser= await userModel.findOneAndUpdate({name:"Muaz"},{name:"Muaz Jutt"},{new:true});
+      res.send(updateuser);
+  });
+  app.get("/read",async(req,res)=>{
+    let readuser=await userModel.find();
+    res.send(readuser);
+  });
+  app.get("/delete", async (req,res)=>{
+    let deleteUser=await userModel.findOneAndDelete({name:"Muaz Jutt"});
+    res.send(deleteUser);
+    console.log("Name Deleted");
+  });
+
+
+
+
 
 // -------------------- 404 Handler --------------------
 app.use((req, res) => {
