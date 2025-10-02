@@ -25,27 +25,16 @@
         <% files.forEach(function(val){ %>
               <div class="task-card min-w-72 px-3 py-4 bg-zinc-800 rounded-lg   text-white ">
             <h1 class="text-white text-2xl tracking-tighter "> <%= val %></h1>
-            <a class="text-blue-500 inline-block mt-3" href="/files/<%= val %> ">Readmore</a>
+            <div class="flex justify-between items-center mt-3">
+                  <a class="text-blue-500 inline-block" href="/file/<%= val %> ">Readmore</a>
+                  <a href="/edit/<%= val %>" class="text-red-400">Edit Filename</a>
+            </div>
+            
     </div>
         <% }) %>
         <% } else{ %>
    <h3 class="text-blue-600 ">No Task yet </h3>
         <% } %>
-
-
-
-      <!-- <div class="task-card hidden w-72 px-3 py-4 bg-zinc-800 rounded-lg   text-white ">
-            <h1 class="text-white text-2xl tracking-tighter ">Some task goes here </h1>
-            <a class="text-blue-500 inline-block mt-3" href=" ">Readmore</a>
-    </div>
-
-      <div class="task-card hidden w-72 px-3 py-4 bg-zinc-800 rounded-lg   text-white ">
-            <h1 class="text-white text-2xl tracking-tighter ">Some task goes here </h1>
-            <a class="text-blue-500 inline-block mt-3" href=" ">Readmore</a>  
-    </div>
-   -->
-
-
   </div>
 
   
